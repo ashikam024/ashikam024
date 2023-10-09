@@ -74,7 +74,7 @@ namespace ECommerceProject1.Controllers
                 });
             }
 
-            return View(model);
+            return View(model);//xyz
         }
 
 
