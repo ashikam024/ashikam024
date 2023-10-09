@@ -1,0 +1,101 @@
+﻿@model List<ECommerceProject1.Models.CartItem>
+
+@{
+    ViewBag.Title = "Show";
+}
+
+<h2>Show Cart</h2>
+@using (Html.BeginForm("Show", "ProductDetail", FormMethod.Post))
+{
+
+    if (Model != null && Model.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th> <!-- Add a new column for the Remove button -->
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cartItem in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@cartItem.ImageUrl" alt="Product Image" width="100" />
+                        </td>
+                        <td>@cartItem.Size</td>
+                        <td>@cartItem.Quantity</td>
+                        <td>@cartItem.Price</td>
+                        <td>@cartItem.Total</td>
+                        <td>
+                            <form action="@Url.Action("Remove", "ProductDetail")" method="post">
+                                <input type="hidden" name="Id" value="@cartItem.Id" />
+                                <input type="hidden" name="Price" value="@cartItem.Price" />
+                                <button type="submit" class="btn btn-danger">
+                                    <span class="glyphicon glyphicon-remove"></span> Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <div class="col-md-10">
+        <!-- Total amount display on the right side -->
+        <div class="text-right">
+            @*<p>Total: @Model.Total(item => item.Price * item.Quantity).ToString("C")</p>*@
+            <p>Total:<span id="totalAmount"></span></p>
+        </div>
+    </div>
+    <!--<div class="col-md-10">
+        <!-- Total amount display on the right side -->
+    <!--<div class="text-right">
+
+            @*<p>Total:<span id="totalAmount" >$0.00</span></p>*@
+        </div>
+    </div>-->
+
+    <script>
+        // Calculate the total amount
+        function calculateTotal() {
+            const totalAmountElement = document.getElementById('totalAmount');
+            let total = 0;
+
+            // Loop through the table rows to sum up the totals
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                const priceCell = row.querySelector('td:nth-child(4)');
+                const quantityCell = row.querySelector('td:nth-child(3)');
+
+                // Extract price and quantity as numbers
+                const price = parseFloat(priceCell.textContent.replace('$', '').trim());
+                const quantity = parseInt(quantityCell.textContent);
+
+                // Calculate the subtotal for this row
+                const subtotal = price * quantity;
+
+                // Add subtotal to the total
+                total += subtotal;
+            });
+
+            // Update the total amount in the HTML
+            totalAmountElement.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Call the calculateTotal function to initialize the total amount
+        calculateTotal();
+    </script>
+
+    <div class="col-md-10">
+        <div class="text-right">
+            <a href="@Url.Action("Payment", "ProductDetail")" id="checkout" class="btn btn-success">BuyAll</a>
+        </div>
+    </div>
+}
+

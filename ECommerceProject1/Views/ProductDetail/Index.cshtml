@@ -1,0 +1,154 @@
+﻿@model ECommerceProject1.ViewModel.ProductViewModel
+
+@{
+    ViewBag.Title = "Product Details";
+}
+
+<h2>@Model.ProductName</h2>
+@using (Html.BeginForm("AddToCart", "ProductDetail", FormMethod.Post))
+{
+    <style>
+        /* Center-align the container */
+        .container {
+            text - align: left;
+            border: 1px solid rgba(0, 0, 0, 0.2); /**/ /* Replace with your desired background color */
+            /*padding: 20px;*/ /**/
+        }
+    </style>
+
+    <div class="product-details">
+        <div class="col-sm-3 col-xs-4 image-book">
+            <img class="thumbnail-img" src="@Model.ImageUrl" id="Image" alt="" style="width:100%;height:auto;padding:10px" />
+        </div>
+        <div class="col-sm-3 col-xs-4 image-book">
+            @*<img class="thumbnail-img" src="@Model.ImageUrl" id="Image" alt="" style="width:100%;height:auto;padding:10px" />*@
+            @*@Html.LabelFor(model => model.ProductId, "Select a Category", htmlAttributes: new { @class = "control-label col-md-2 hidden", @id = "productid" })*@
+
+            <input type="text" id="productid" name="productPrice" value="@Model.ProductId" hidden />
+            <div class="product-info">
+                <p>
+                    <strong>Price:</strong>
+                    <input type="text" id="productPrice" name="productPrice" value="@Model.Price" />
+                </p>
+                <p>
+                    <strong>Description:</strong>
+                    <input type="text" id="productDescription" name="productDescription" value=" @Model.Description" />
+                </p>
+            </div>
+            <p>
+                <strong>Quantity:</strong>
+                <input type="number" id="quantity" name="quantity" min="1" value="1">
+            </p>
+            <p>
+
+            </p>
+            @*<p>
+            @if (!string.IsNullOrEmpty(Model.Size))
+            {
+                <strong><p>Size Options: @Model.Size</p></strong>
+                var sizeOptions = Model.Size.Split(',');
+                for (var i = 0; i < sizeOptions.Length; i++)
+                {
+                    <label>
+                        @Html.RadioButton("selectedSize", sizeOptions[i], new { id = "size" + i })
+                        @sizeOptions[i]
+                    </label>
+                }
+            }
+        </p>*@
+            <div class="form-group">
+                <label for="sizelabel">Size:</label>
+                <select class="form-control" asp-for="Size" id="Size">
+                    <option value="">Select a size</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+            <p>
+                <strong>Total:</strong>
+                <input type="text" id="totalAmount" name="totalAmount" value="@Model.Price" />
+            </p>
+          
+
+
+            <input type="button" value="AddToCart" onclick="addToCart()" class="btn btn-primary glyphicon glyphicon-shopping-cart" style="height:30px; width:80px " />
+
+            <input type="button" value="BuyNow" onclick="buyNow()" class="btn btn-primary glyphicon glyphicon-check" style="height: 30px; width: 80px " />
+        </div>
+    </div>
+
+
+    <script>
+    function updateTotal() {
+        const productPrice = parseFloat(document.getElementById("productPrice").value);
+        const quantity = parseInt(document.getElementById("quantity").value, 10);
+        const totalAmount = productPrice * quantity;
+        document.getElementById("totalAmount").value = totalAmount.toFixed(2); // Ensure two decimal places
+    }
+
+    document.getElementById("quantity").addEventListener("input", updateTotal);
+
+        function addToCart() {
+
+
+        // Get the values from the input fields
+            let productid = parseInt(document.getElementById("productid").value);
+            console.log(productid);
+        let price = parseFloat(document.getElementById("productPrice").value);
+        let quantity = parseInt(document.getElementById("quantity").value, 10);
+        // Calculate the total amount
+            let totalAmount = price * quantity;
+            debugger;
+        let Size = document.getElementById("Size").value;
+        // Rest of the code remains the same
+        let image = document.getElementById("Image").src;
+        let description = document.getElementById("productDescription").value;
+        // Create a data object to send to the server
+        let data = {
+            ProductId: productid,
+            Price: price,
+            Quantity: quantity,
+            ImageUrl: image,
+            Description: description,
+            Total: totalAmount,
+            Size: Size
+            };
+            console.log(data)
+         var selectedSize = $("input[name='selectedSize']:checked").val();
+        if (selectedSize) {
+
+            @*var url = '@Url.Action("AddToCart", "ProductDetail", new { id = Model.ProductId})' + '?Size=' + selectedSize;*@
+
+           <!--/*  Navigate to the URL*/
+           /* window.location.href = url;*/-->
+        } else {
+            /*alert("Please select a size before adding to cart.");*/
+        }
+       /* debugger;*/
+        // Send an AJAX POST request to the controller action
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("AddToCart", "ProductDetail")',
+            data: data,
+            success: function (response) {
+                // Handle the success response, e.g., redirect to another page
+                window.location.href = '@Url.Action("Show", "ProductDetail")' ;
+            },
+            error: function (error) {
+                // Handle errors, if any
+                console.log(error);
+            }
+        });
+    }
+    </script>
+
+}
+
+
+
+
+
+
